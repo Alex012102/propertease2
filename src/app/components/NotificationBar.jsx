@@ -23,7 +23,7 @@ const NotificationsBar = ({ isOpen, setIsOpen }) => {
     <>
       <div
         className={`fixed top-0 right-0 h-full bg-brand-charcoal-shade text-white transition-all duration-300
-        ${isOpen ? "w-64" : "w-0 md:w-64"}
+        ${isOpen ? "w-80" : "w-0 md:w-80"}
         overflow-hidden z-40 flex flex-col md:relative md:flex-shrink-0`}
       >
         <div className="h-full flex flex-col">
@@ -36,7 +36,7 @@ const NotificationsBar = ({ isOpen, setIsOpen }) => {
           <div className="text-sm">
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
-          <div className="px-4 py-2">{renderTabContent()}</div>
+          <div className="pt-3">{renderTabContent()}</div>
         </div>
       </div>
 

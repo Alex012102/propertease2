@@ -1,9 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { mockMessages } from "../../utils/mocks/mockMessages";
 
 const MessagesPanel = () => {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    setMessages(mockMessages);
+
+    // Code for when using API
+    // fetch(URLhere)
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     setEvents(data);
+    //   });
+  }, []);
+
   return (
     <div>
-      MESSAGES
+      {messages.map((msg) => (
+        <div
+          key={msg.id}
+          className="hover:bg-brand-charcoal-tint py-3 px-4 border-b border-b-brand-charcoal-light"
+        >
+          <div className="flex mb-2 space-x-3 items-center">
+            <img
+              src={msg.avatar}
+              alt="n/A"
+              className="w-10 h-10 rounded-full"
+            />
+            <div className="flex flex-col">
+              <strong
+                className={`${
+                  msg.isRead ? "text-sm" : "text-brand-primary text-sm"
+                } `}
+              >
+                {msg.sender}
+              </strong>
+              <p className="text-xs">{msg.timestamp}</p>
+            </div>
+          </div>
+          <small className="line-clamp-2">{msg.message}</small>
+        </div>
+      ))}
     </div>
   );
 };
