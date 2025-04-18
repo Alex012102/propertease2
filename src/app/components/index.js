@@ -1,5 +1,9 @@
+export { default as Card } from "./Card.jsx";
+export { default as Tabs } from "./Tabs.jsx";
 export { default as Button } from "./Button.jsx";
 export { default as Navbar } from "./Navbar.jsx";
 export { default as ProfilePhoto } from "./ProfilePhoto.jsx";
-export { default as Card } from "./Card.jsx";
+export { default as MessagesPanel } from "./MessagesPanel.jsx";
+export { default as CalendarPanel } from "./CalendarPanel.jsx";
 export { default as NotificationBar } from "./NotificationBar.jsx";
+export { default as NotificationsPanel } from "./NotificationsPanel.jsx";

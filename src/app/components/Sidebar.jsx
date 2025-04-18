@@ -16,7 +16,7 @@ const Sidebar = ({ isOpen, setIsOpen, children }) => {
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full bg-gray-900 text-white transition-all duration-300
+      className={`fixed top-0 left-0 h-full bg-brand-charcoal-shade text-white transition-all duration-300
       ${isOpen ? "w-48" : "w-0 md:w-48"}
       overflow-hidden z-40 md:relative md:flex-shrink-0 flex flex-col`}
     >

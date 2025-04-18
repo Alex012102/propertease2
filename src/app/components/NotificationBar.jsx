@@ -1,24 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import { X } from "lucide-react";
+import Tabs from "./Tabs";
+import MessagesPanel from "./MessagesPanel";
+import CalendarPanel from "./CalendarPanel";
+import NotificationsPanel from "./NotificationsPanel";
 
 const NotificationsBar = ({ isOpen, setIsOpen }) => {
+  const [activeTab, setActiveTab] = useState("notifications");
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "messages":
+        return <MessagesPanel />;
+      case "calendar":
+        return <CalendarPanel />;
+      default:
+        return <NotificationsPanel />;
+    }
+  };
+
   return (
     <>
       <div
-        className={`fixed top-0 right-0 h-full bg-gray-900 text-white transition-all duration-300
-        ${isOpen ? "w-48" : "w-0 md:w-48"}
+        className={`fixed top-0 right-0 h-full bg-brand-charcoal-shade text-white transition-all duration-300
+        ${isOpen ? "w-64" : "w-0 md:w-64"}
         overflow-hidden z-40 flex flex-col md:relative md:flex-shrink-0`}
       >
-        <div className="p-4 h-full flex flex-col">
+        <div className="h-full flex flex-col">
           <button
             className="md:hidden text-white self-end"
             onClick={() => setIsOpen(false)}
           >
             <X size={24} />
           </button>
-          <div className="mt-4 text-sm">
-            <p>🔔 No new notifications.</p>
+          <div className="text-sm">
+            <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
+          <div className="px-4 py-2">{renderTabContent()}</div>
         </div>
       </div>
 
