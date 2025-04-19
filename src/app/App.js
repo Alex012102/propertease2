@@ -8,13 +8,14 @@ import "../landing/styles/landing.css";
 import "../styles/css/index.css";
 import "../landing/styles/landing.css";
 
+//App.js
 const App = () => {
   return (
-    <BrowserRouter>
-      <AuthProvider>
+    <AuthProvider>
+      <BrowserRouter>
         <AppRoutes />
-      </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   );
 };
 

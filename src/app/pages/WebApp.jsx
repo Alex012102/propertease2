@@ -1,10 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-
-// Context
 import { useAuth } from "../../context/AuthContext";
 
-// Components
 import LayoutWithSidebar from "./layouts/LayoutWithSidebar";
 
 // Pages
@@ -18,19 +15,20 @@ import {
   Settings,
   Account,
   NotFound,
-} from "./index"
+} from "./index";
 
 const WebApp = () => {
-  const { user, isAuthChecked } = useAuth();
+  const { isAuthChecked, loading } = useAuth();
 
   // Prevent redirecting until auth is checked
-  if (!isAuthChecked) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>; // If still loading auth state, show loading
 
-  if (!user) return <Navigate to="/auth" replace />;
+  if (!isAuthChecked) return <Navigate to="/auth" replace />; // If not authenticated, redirect to login
 
   return (
     <Routes>
       <Route element={<LayoutWithSidebar />}>
+        {/* These are the actual routes for the web app */}
         <Route path="/" element={<Dashboard />} />
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/properties" element={<Properties />} />
@@ -40,6 +38,7 @@ const WebApp = () => {
         <Route path="/settings" element={<Settings />} />
         <Route path="/account" element={<Account />} />
       </Route>
+      {/* This is a fallback route for any unknown paths */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

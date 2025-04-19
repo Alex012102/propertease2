@@ -1,17 +1,16 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import supabase from "../../../../config/supabaseClient";
 
-const SignInForm = ({ setMessage }) => {
-  const navigate = useNavigate();
+const RegisterForm = ({ setMessage }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setMessage("");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
     });
@@ -21,9 +20,8 @@ const SignInForm = ({ setMessage }) => {
       return;
     }
 
-    if (data?.session) {
-      console.log("Session:", data.session); // Debugging log
-      navigate("/app/");
+    if (data) {
+      setMessage("User account created!");
     }
 
     setEmail("");
@@ -37,7 +35,6 @@ const SignInForm = ({ setMessage }) => {
         placeholder="Email"
         className="w-full text-black p-2 mb-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary"
         value={email}
-        required
         onChange={(e) => setEmail(e.target.value)}
       />
 
@@ -54,10 +51,10 @@ const SignInForm = ({ setMessage }) => {
         type="submit"
         className="w-full px-4 py-2 bg-brand-subtle text-black rounded-lg hover:bg-brand-subtle-dark transition"
       >
-        Sign In
+        Register
       </button>
     </form>
   );
 };
 
-export default SignInForm;
+export default RegisterForm;

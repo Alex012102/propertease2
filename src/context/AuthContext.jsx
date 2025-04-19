@@ -1,48 +1,39 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import mockUser from "../utils/mocks/mockUser"; // Only used in development/testing
+import supabase from "../config/supabaseClient";
 
-// Create Auth
 const AuthContext = createContext();
 
-//Auth Provider Component
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const getSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else if (process.env.NODE_ENV === "development") {
-      // Auto-login mock user in development mode
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
-    }
+      console.log("Session from Supabase:", session); // Debug log
+      setIsAuthChecked(!!session);
+      setLoading(false);
+    };
 
-    setIsAuthChecked(true);
+    getSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        console.log("Auth state changed:", session); // Debug log
+        setIsAuthChecked(!!session);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-    navigate("/app");
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-    navigate("/auth");
-  };
-
-  const isAuthenticated = !!user;
-
   return (
-    <AuthContext.Provider
-      value={{ user, login, logout, isAuthenticated, isAuthChecked }}
-    >
+    <AuthContext.Provider value={{ isAuthChecked, loading }}>
       {children}
     </AuthContext.Provider>
   );

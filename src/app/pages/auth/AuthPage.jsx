@@ -1,22 +1,15 @@
-// AuthPage.js
-import React from "react";
-import { useAuth } from "../../../context/AuthContext";
+import React, { useState } from "react";
 import HouseCloseUpIMG from "../../../assets/images/house-close-up.jpg";
 import logo from "../../../assets/logos/PropertEase-Logo-white_primary.png";
-import { Google, Facebook, Apple } from "../../../assets/icons";
-import { SignInForm, SocialButton } from "./components";
-import mockUser from "../../../utils/mocks/mockUser";
+import { RegisterForm, SignInForm, SocialButtons } from "./components";
 
+// AuthPage.js
 const AuthPage = () => {
-  const { login } = useAuth();
+  const [currentForm, setCurrentForm] = useState("login");
+  const [message, setMessage] = useState("");
 
-  const handleLogin = (email, password) => {
-    // Simulate login with mockUser
-    if (email === mockUser.email && password === mockUser.password) {
-      login(mockUser); // If credentials match, log the user in
-    } else {
-      console.log("Invalid email or password");
-    }
+  const toggleForm = (formName) => {
+    setCurrentForm(formName);
   };
 
   return (
@@ -37,34 +30,46 @@ const AuthPage = () => {
           className="mb-3"
           style={{ width: "15em" }}
         />
-        <p className="mb-6">Sign in to access your account.</p>
+        <p className="mb-6">
+          {message
+            ? message
+            : currentForm === "login"
+            ? "Sign In to your account"
+            : "Create your account."}
+        </p>
 
         {/* 3rd Party sign in div */}
         <div className="flex w-full mb-6 h-full">
-          <div className="flex flex-col justify-between h-full w-1/2 mx-4 space-y-2">
-            {[
-              { src: Google, alt: "Google", text: "Continue with Google" },
-              {
-                src: Facebook,
-                alt: "Facebook",
-                text: "Continue with Facebook",
-              },
-              { src: Apple, alt: "Apple", text: "Continue with Apple" },
-            ].map((social) => (
-              <SocialButton key={social.alt} {...social} />
-            ))}
-          </div>
+          <SocialButtons />
 
           {/* Sign In form div */}
           <div className="w-1/2 mx-4">
-            <SignInForm handleLogin={handleLogin} />
+            {currentForm === "login" ? (
+              <SignInForm setMessage={setMessage} />
+            ) : (
+              <RegisterForm setMessage={setMessage} />
+            )}
           </div>
         </div>
 
-        <div className="flex justify-between font-thin text-xs w-[12rem]">
-          <p>Forgot Password</p>
+        <div className="flex justify-evenly font-thin text-xs w-[50%]">
+          <p className="w-[12rem] text-center">Forgot Password</p>
           <p>|</p>
-          <p>Create Account</p>
+          {currentForm === "login" ? (
+            <button
+              className="w-[12rem] text-center"
+              onClick={() => toggleForm("register")}
+            >
+              Create Account
+            </button>
+          ) : (
+            <button
+              className="w-[12rem] text-center"
+              onClick={() => toggleForm("login")}
+            >
+              Sign In
+            </button>
+          )}
         </div>
       </div>
     </div>

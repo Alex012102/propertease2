@@ -1,18 +1,18 @@
 import React from "react";
-import { X } from "lucide-react"; // Icons for open/close
+import { X } from "lucide-react";
 import logo from "../../assets/logos/PropertEase-Logo-white_primary.png";
 import { Navbar, ProfilePhoto } from ".";
-import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import supabase from "../../config/supabaseClient";
 
 const Sidebar = ({ isOpen, setIsOpen, children }) => {
-  const { logout } = useAuth();
   const navigate = useNavigate(); // Create the navigate function
 
-  const handleLogout = () => {
-    logout(); // Call the logout function from AuthContext
-    navigate("/auth"); // Redirect to the Auth page
-  };
+  const handleLogout = async () => {
+    const {error} = await supabase.auth.signOut()
+    if (error) throw error;
+    navigate("/auth")
+  }
 
   return (
     <div
