@@ -1,39 +1,75 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import supabase from "../config/supabaseClient";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
+  const [profile, setProfile] = useState(null); // Default to null, not []
+
+  const fetchUserProfile = async (userId) => {
+    const { data: profile, error } = await supabase
+      .from("accounts")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
+
+    if (error) {
+      console.error("Error fetching profile:", error);
+      return null;
+    }
+
+    return profile;
+  };
 
   useEffect(() => {
-    const getSession = async () => {
+    const fetchSession = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
 
-      console.log("Session from Supabase:", session); // Debug log
-      setIsAuthChecked(!!session);
-      setLoading(false);
-    };
-
-    getSession();
-
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        console.log("Auth state changed:", session); // Debug log
-        setIsAuthChecked(!!session);
+      if (session) {
+        setUser(session.user);
+        setIsAuthChecked(true); // ✅ set when session exists
       }
-    );
 
-    return () => {
-      listener.subscription.unsubscribe();
+      const { data: authListener } = supabase.auth.onAuthStateChange(
+        async (_event, session) => {
+          setUser(session?.user || null);
+          setIsAuthChecked(true);
+        }
+      );
+
+      return () => {
+        authListener?.unsubscribe();
+      };
     };
+
+    fetchSession();
   }, []);
 
+  useEffect(() => {
+    if (user?.id) {
+      const getProfile = async () => {
+        const profile = await fetchUserProfile(user.id);
+        if (profile) {
+          setProfile(profile);
+        }
+        setLoading(false); // ✅ Stop loading after profile is loaded
+      };
+
+      getProfile();
+    } else {
+      setLoading(false); // ✅ Also stop loading if user is null
+    }
+  }, [user]);
+
   return (
-    <AuthContext.Provider value={{ isAuthChecked, loading }}>
+    <AuthContext.Provider
+      value={{ user, loading, isAuthChecked, profile, setProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

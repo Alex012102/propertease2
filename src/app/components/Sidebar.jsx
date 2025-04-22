@@ -1,18 +1,26 @@
 import React from "react";
 import { X } from "lucide-react";
-import logo from "../../assets/logos/PropertEase-Logo-white_primary.png";
 import { Navbar, ProfilePhoto } from ".";
+import LoadingModal from "./LoadingModal";
 import { useNavigate } from "react-router-dom";
 import supabase from "../../config/supabaseClient";
+import { useAuth } from "../../context/AuthContext";
+import logo from "../../assets/logos/PropertEase-Logo-white_primary.png";
 
 const Sidebar = ({ isOpen, setIsOpen, children }) => {
   const navigate = useNavigate(); // Create the navigate function
 
+  const { loading, error, profile } = useAuth();
+
+  if (loading) return <LoadingModal />;
+
+  if (error) return <div>Error: {error}</div>;
+
   const handleLogout = async () => {
-    const {error} = await supabase.auth.signOut()
+    const { error } = await supabase.auth.signOut();
     if (error) throw error;
-    navigate("/auth")
-  }
+    navigate("/auth");
+  };
 
   return (
     <div
@@ -33,6 +41,11 @@ const Sidebar = ({ isOpen, setIsOpen, children }) => {
           alt="propertease"
         />
         <ProfilePhoto />
+        {profile && (
+          <p className="mt-2">
+            {profile.first_name} {profile.last_name}
+          </p>
+        )}
         <Navbar />
         <div className="flex-grow" />
         <p

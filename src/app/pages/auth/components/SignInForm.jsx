@@ -9,26 +9,32 @@ const SignInForm = ({ setMessage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
+    // console.log("🚀 Attempting sign in...");
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
+      email,
+      password,
     });
 
+    // console.log("🧾 Full sign-in response:", { data, error }); 
+
     if (error) {
+      // console.error("❌ Sign-in error:", error.message);
       setMessage(error.message);
       return;
     }
 
     if (data?.session) {
-      console.log("Session:", data.session); // Debugging log
+      // console.log("✅ Session created:", data.session);
       navigate("/app/");
+    } else {
+      console.warn("⚠️ No session returned even though no error");
     }
-
-    setEmail("");
-    setPassword("");
   };
+
+  supabase.auth.getSession().then(({ data, error }) => {
+    console.log("🔍 Manual session check outside useEffect:", { data, error });
+  });
 
   return (
     <form onSubmit={handleSubmit} className="rounded-lg">

@@ -1,19 +1,21 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import LoadingModal from "../app/components/LoadingModal";
 
 // PrivateRoute.jsx
 const PrivateRoute = ({ children }) => {
-  const { isAuthChecked, loading } = useAuth();
+  const { user, isAuthChecked, loading } = useAuth();
 
-  // Loading state, show a loading spinner while waiting for auth state
-  if (loading) return <div>Loading...</div>;
+  if (loading || !isAuthChecked) {
+    return <LoadingModal />; // Optional loading screen during auth state check
+  }
 
-  // If auth is not checked or user is not authenticated, redirect to auth page
-  if (!isAuthChecked) return <Navigate to="/auth" replace />;
+  if (!user) {
+    return <Navigate to="/auth" replace />; // Redirect to auth page if not authenticated
+  }
 
-  // If everything checks out, render the child components (WebApp, etc.)
-  return children;
+  return children; // Render children if authenticated
 };
 
 export default PrivateRoute;

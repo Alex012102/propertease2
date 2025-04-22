@@ -1,12 +1,19 @@
+// AppRoutes.js
 import React from "react";
-import PrivateRoute from "./PrivateRoute";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
 import LandingPage from "../landing/LandingPage";
 import AuthPage from "../app/pages/auth/AuthPage";
 import WebApp from "../app/pages/WebApp";
+import LoadingModal from "../app/components/LoadingModal";
 
-// AppRoutes.js
 const AppRoutes = () => {
+  const { isAuthChecked, loading, user } = useAuth();
+
+  // If auth is loading or check isn't done, show loading screen
+  if (loading || !isAuthChecked) return <LoadingModal />;
+
   return (
     <Routes>
       {/* Public routes */}
@@ -17,9 +24,11 @@ const AppRoutes = () => {
       <Route
         path="/app/*"
         element={
-          <PrivateRoute>
-            <WebApp /> {/* This is the protected area */}
-          </PrivateRoute>
+          user ? (
+            <WebApp /> // User is authenticated, show the app
+          ) : (
+            <Navigate to="/auth" replace /> // Redirect to login if not authenticated
+          )
         }
       />
     </Routes>
